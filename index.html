@@ -1,0 +1,436 @@
+<!DOCTYPE>
+<html>
+    <head>
+    <title>Quiz</title>
+    <script src="https://unpkg.com/vue"></script>
+    <style>
+        .container {
+            box-shadow: inset 0 0 0 1000px rgba(0,0,0,.4);
+            width: 1000px;
+            height: 600px;
+            background-position: center center;
+            outline: 2px solid #EFF4F4;
+            outline-offset: -10px;
+            font-family: Roboto;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: -moz-none;
+            -o-user-select: none;
+            user-select: none;
+            background: linear-gradient(#232526, #414345);
+            transition-duration: 0.5s;
+        }
+
+        .space {
+            padding: 10px 10px;
+        }
+
+        .qCounter {
+            margin: 10px 10px;
+            color:white;
+        }
+
+        .question {
+            height: 28px;
+            margin-top:80px;
+            color: #FFFFFF;
+            font-family: Roboto;
+            font-size: 26px;
+            font-weight: bold;
+            line-height: 39px;
+            text-align: center;
+        }
+
+        .resultTitle {
+            height: 28px;
+            margin-top:110px;
+            color: #FFFFFF;
+            font-family: Roboto;
+            font-size: 40px;
+            font-weight: bold;
+            line-height: 39px;
+            text-align: center;
+        }
+
+        .questionButton {
+            border: 2px solid #EFF4F4;
+            font-size: 20px;
+            font-weight: bold;
+            color: #EFF4F4;
+            padding: 20px 61px 20px 61px;
+            width: 140px;
+            text-align: center;
+            margin: 10px auto;
+        }
+
+        .questionButton:hover {
+            background-color:#F7B733;
+            cursor: pointer;
+        }
+
+        .result {
+            padding-top:30px;
+            width:800px;
+            height:500px;
+            margin:auto;
+            font-size: 19px;
+            color: white;
+        }
+
+        .buttons {
+            padding-top:auto;
+            width:600px;
+            height:500px;
+            margin:auto;
+            /*border: 2px solid #EFF4F4;*/
+        }
+
+
+    </style>
+    </head>
+    <body>
+        <div id="quiz">
+            <div class="container" v-if="questionNum === 0">
+                <div class ="space">
+                    <div class="result">
+                        <h3 class="question">Which LoL Champion Are You?</h3>
+                        <div class="questionButton" @click="nextQuestion">Begin</div>
+                    </div>
+                </div>
+            </div>
+            <div class="container" v-else :style="{backgroundImage: 'url(' + questionBank[questionNum].background +')'}">
+                <div class="space">
+                    <div class="qCounter" v-if="questionNum !== 14">
+                        <span>{{ questionNum }} / 13</span>
+                    </div>
+                    <h3 class="question" v-if="questionNum !== 14">{{ questionBank[questionNum].question }}</h3>
+                    <h3 class="resultTitle" v-else>You're {{championResult[championIndex].name}}! <br></h3>
+                    <div class="result" v-if="questionNum === 14">
+                        <p>{{ championResult[championIndex].text }}</p>
+                        <div class="questionButton" @click="reset">Again?</div>
+                    </div>
+                    <div class="buttons" v-else>
+                        <div id="q1" v-if="questionNum === 1">
+                                <div class="questionButton" @click="nextQuestion">ADC</div>
+                                <div class="questionButton" @click="nextQuestion">Support</div>
+                                <div class="questionButton" @click="nextQuestion">Mid</div>
+                                <div class="questionButton" @click="nextQuestion">Jungle</div>
+                                <div class="questionButton" @click="nextQuestion">Top</div>
+                        </div>
+                        <div id="q2" v-if="questionNum === 2">
+                            <div class="questionButton" @click="nextQuestion">Yes</div>
+                            <div class="questionButton" @click="nextQuestion">No</div>
+                        </div>
+                        <div id="q3" v-if="questionNum === 3">
+                            <div class="questionButton" @click="nextQuestion">Ranged</div>
+                            <div class="questionButton" @click="nextQuestion">Melee</div>
+                        </div>
+                        <div id="q4" v-if="questionNum === 4">
+                            <div class="questionButton" @click="nextQuestion">Offensively</div>
+                            <div class="questionButton" @click="nextQuestion">Defensively</div>
+                        </div>
+                        <div id="q5" v-if="questionNum === 5">
+                            <div class="questionButton" @click="nextQuestion">YES</div>
+                            <div class="questionButton" @click="nextQuestion">No</div>
+                        </div>
+                        <div id="q6" v-if="questionNum === 6">
+                            <div class="questionButton" @click="nextQuestion">Team SoloMid</div>
+                            <div class="questionButton" @click="nextQuestion">SK Telecom T1</div>
+                            <div class="questionButton" @click="nextQuestion">Samsung Galaxy</div>
+                            <div class="questionButton" @click="nextQuestion">Fnatic</div>
+                            <div class="questionButton" @click="nextQuestion">Other</div>
+                        </div>
+                        <div id="q7" v-if="questionNum === 7">
+                            <div class="questionButton" @click="nextQuestion">Obviously</div>
+                            <div class="questionButton" @click="nextQuestion">Not Bothered</div>
+                        </div>
+                        <div id="q8" v-if="questionNum === 8">
+                            <div class="questionButton" @click="nextQuestion">Dueling</div>
+                            <div class="questionButton" @click="nextQuestion">Team Fights</div>
+                        </div>
+                        <div id="q9" v-if="questionNum === 9">
+                            <div class="questionButton" @click="nextQuestion">Yes</div>
+                            <div class="questionButton" @click="nextQuestion">No</div>
+                        </div>
+                        <div id="q10" v-if="questionNum === 10">
+                            <div class="questionButton" @click="nextQuestion">Dong Squad</div>
+                            <div class="questionButton" @click="nextQuestion">No</div>
+                        </div>
+                        <div id="q11" v-if="questionNum === 11">
+                            <div class="questionButton" @click="nextQuestion">Yes!</div>
+                            <div class="questionButton" @click="nextQuestion">No</div>
+                        </div>
+                        <div id="q12" v-if="questionNum === 12">
+                            <div class="questionButton" @click="nextQuestion">Cats</div>
+                            <div class="questionButton" @click="nextQuestion">Dogs</div>
+                            <div class="questionButton" @click="nextQuestion">Both</div>
+                        </div>
+                        <div id="q13" v-if="questionNum === 13">
+                            <div class="questionButton" @click="nextQuestion">Rock</div>
+                            <div class="questionButton" @click="nextQuestion">Paper</div>
+                            <div class="questionButton" @click="nextQuestion">Scissors</div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <script>
+        new Vue({
+            el: "#quiz",
+            data: {
+                questionNum: 0,
+                championIndex: 0,
+                selections: [],
+                questionBank: [{
+                    background: "",
+                    question: ""
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/q1.jpg",
+                    question: "Q1: Which Role Do you Prefer Playing?"
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/q2.jpg",
+                    question: "Q2: Are You a Fan of Yordles?"
+                }, {
+                    background:  "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/q3.jpg",
+                    question: "Q3: Do You Prefer Ranged or Meele Champions?"
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/q4.jpg",
+                    question: "Q4: Do You Play Offensively or Defensively"
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/q5.jpg",
+                    question: "Q5: Would You Consider Yourself Crazy?"
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/q6.jpg",
+                    question: "Q6: Which Is Your Favorite eSports Team?"
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/q7.jpg",
+                    question: "Q7: Do You Like Getting Pentakills?"
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/q8.jpg",
+                    question: "Q8: Do You Prefer Dueling Or Team Fights?"
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/q9.jpg",
+                    question: "Q9: Do You Like Mushrooms?"
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/q10.jpg",
+                    question: "Q10: Do You Enjoy Raising Your Dongers?"
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/q11.jpg",
+                    question: "Q11: For Demacia?"
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/q12.jpg",
+                    question: "Q12: Do You Like Cats Or Dogs?"
+                }, {
+                    background: "https://www.unrankedsmurfs.com//images/upload/blog/2018/01/q13.jpg",
+                    question: "Q13: Rock, Paper, or Scissors?"
+                }, {
+                    background: "",
+                    question: ""
+                }],
+                championResult: [{
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/swain.jpg",
+                    name: "Swain",
+                    text: "You love dominating enemies in the top lane and aren't afraid to go all in to show them who's boss. Sometimes you turn into a Raven to scare them away.",
+                    combo: "Top,No,Ranged,Offensively"
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/gangplank.jpg",
+                    name: "Gangplank",
+                    text: "Ahoy matey! You play defensively, poking your enemies down until low HP before diving them and sinking their ship.",
+                    combo: "Top,No,Melee,Defensively"
+
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/teemo.jpg",
+                    name: "Teemo",
+                    text: "You LOVE mushrooms, you eat them, breathe them, and live them. When not dealing with mushrooms you're firing blow darts at everyone from the bushes.",
+                    combo: "Top,Yes"
+
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/darius.jpg",
+                    name: "Darius",
+                    text: "You love playing aggressively in the top lane and you aren't afraid to get up close and DUNK some noobs.",
+                    combo: "Top,No,Melee,Defensively"
+
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/malphite.jpg",
+                    name: "Malphite",
+                    text: "You'd rather wait patiently for the best opportunities before you dive your opponents, you often take a beating but it doesn't matter, you're ROCK SOLID!",
+                    combo: "Top,No,Melee,Defensively"
+
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/amumu.jpg",
+                    name: "Amumu",
+                    text: "You're a sensitive Yordle that can be set off at any time. And by set off we mean unleash the curse of the sad mummy! Your crying is often mistaken for weakness when really it’s just a decoy.",
+                    combo: "Jungle,Yes"
+
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/fiddlesticks.jpg",
+                    name: "Fiddlesticks",
+                    text: "You roam around the jungle blending in with the environment until you seize the opportunity to attack with your murderous crows.",
+                    combo: "Jungle,No,Ranged,Offensively"
+
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/kindred.jpg",
+                    name: "Kindred",
+                    text: "You roam around the jungle sending your wolf to do the deadly damage, if things get sticky you become invulnerable and laugh as your enemies attack in vain.",
+                    combo: "Jungle,No,Ranged,Defensively"
+
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/master-yi.jpg",
+                    name: "Master Yi",
+                    text: "You sprint around the jungle deleting everything in your path, when your team needs help you pounce out of the bushes like a bullet train and claim your pentakill.",
+                    combo: "Jungle,No,Melee,Offensively"
+
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/shyvana.jpg",
+                    name: "Shyvana",
+                    text: "You battle minions in the jungle by smacking them in the face, when the right time comes you transform into the baddest dragon and roast everyone.",
+                    combo: "Jungle,No,Melee,Defensively"
+
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/fizz.jpg",
+                    name: "Fizz",
+                    text: "You're a Yordle with a trident and a love for tricks. With your range of trick shots you flip around your enemies like the slimy fish you are. At least you'll never be the catch of the day!",
+                    combo: "Mid,Yes"
+
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/twisted-fate.jpg",
+                    name: "Twisted Fate",
+                    text: "You're always feeling lucky thanks to your dice, when an enemy tries to escape you know exactly where they are. You own the midlane.",
+                    combo: "Mid,No,Ranged,Offensively"
+
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/viktor.jpg",
+                    name: "Viktor",
+                    text: "You invite your enemies to step this way while laying down your gravity field, when they get sucked into the middle you blast them with your frickin LAZER.",
+                    combo: "Mid,No,Ranged,Defensively"
+
+                },  {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/kassadin.jpg",
+                    name: "Kassadin",
+                    text: "You might be a melee champion but that doesn’t stop you from destroying your enemies, with your riftwalk you blink around slashing your enemies and owning the mid lane.",
+                    combo: "Mid,No,Melee,Offensively"
+
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/yasuo.jpg",
+                    name: "Yasuo",
+                    text: "You are a true samurai. You specialize in causing destruction when your enemy least expects it, with a defensive wind wall and sweeping blade you have all the tools to cause mayhem.",
+                    combo: "Mid,No,Melee,Defensively"
+
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/tristana.jpg",
+                    name: "Tristana",
+                    text: "You're a Yordle with a huge bazooka! You might be small but you definitely pack punch with your buster cannon!",
+                    combo: "ADC,Yes"
+
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/sivir.jpg",
+                    name: "Sivir",
+                    text: "You're a true hunter who loves to chase enemies down from all over the map. When in team fights you let out a rallying scream to rally your team and destroy your enemies.",
+                    combo: "ADC,No,Ranged,Offensively"
+
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/caitlyn.jpg",
+                    name: "Caitlyn",
+                    text: "You place traps all over the battlefield waiting for some dumbo to run into them. When the time is right, you snipe your opponents from the other side of the map.",
+                    combo: "ADC,No,Ranged,Defensively"
+
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/trymadmere.jpg",
+                    name: "Tryndamere",
+                    text: "A man with an incredibly large sword and a man on a mission - to destroy everyone on sight. With the ability to cheat death you're not afraid to take on 5 enemies.",
+                    combo: "ADC,No,Melee,Offensively"
+
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/mord.jpg",
+                    name: "Mordekaiser",
+                    text: "With a huge mace to swing around and smack people you're not afraid to dish out some damage. With plenty of armor, you can easily take a beating and enslave enemies as your prisoner.",
+                    combo: "ADC,No,Melee,Defensively"
+
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/lulu.jpg",
+                    name: "Lulu",
+                    text: "You're a Yordle full of tricks and fairies, with the ability to supersize any ally you make your team very hard to kill and they love you for it.",
+                    combo: "Support,Yes"
+
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/blitzcrank.jpg",
+                    name: "Blitzcrank",
+                    text: "Beep boop Blitzcrank grab! You love to outplay enemies in the bottom lane and support your teammates along the way.",
+                    combo: "Support,No,Ranged,Offensively"
+
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/janna.jpg",
+                    name: "Janna",
+                    text: "With your whirlwinds and shields, you enjoy playing defensively while supporting your ADC and team.",
+                    combo: "Support,No,Ranged,Defensively"
+
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/leona.jpg",
+                    name: "Leona",
+                    text: "Covered in shiny armor from head to toe you love getting stuck into the action. With all your stuns and crowd control, enemies run away from you in horror.",
+                    combo: "Support,No,Melee,Offensively"
+
+                }, {
+                    background: "https://www.unrankedsmurfs.com/images/upload/blog/2018/01/taric.jpg",
+                    name: "Taric",
+                    text: "With your sexy hair and chiseled pecs, you stun your way to victory and shield your allies along the way.",
+                    combo: "Support,No,Melee,Defensively"
+
+                }]
+            },
+            methods: {
+                nextQuestion: function(e) {
+                    if(this.questionNum !== 14) {
+                        this.questionNum++;
+                        if(this.questionNum <= 5 && this.questionNum > 1) {
+                            this.selections.push(e.srcElement.innerText);
+                        }
+                    }
+                    if (this.questionNum === 14) {
+                        this.championIndex = this.result(this.selections);
+                        this.questionBank[14].background = this.championResult[this.championIndex].background;
+                    }
+                },
+                result: function(selections) {
+                    if(selections[1] === "Yes") {
+                        if (selections[0] === "ADC") {
+                            return 15;
+                        }
+                        else if (selections[0] === "Top") {
+                            return 2;
+                        }
+                        else if (selections[0] === "Jungle") {
+                            return 5;
+                        }
+                        else if (selections[0] === "Mid") {
+                            return 10;
+                        }
+                        else if (selections[0] === "Support") {
+                            return 20;
+                        }
+                    }
+                    return this.championResult.findIndex(function(e) {
+
+                            return selections.toString() === e.combo;
+
+                    });
+                },
+                reset: function() {
+                    this.questionNum = 0;
+                    this.selections = [];
+                }
+            },
+            created: function() {
+                this.questionBank.forEach(function(e) {
+                    new Image().src = e.background;
+                });
+                this.championResult.forEach(function(e) {
+                   new Image().src = e.background;
+                });
+            }
+        });
+        </script>
+    </body>
+</html>
